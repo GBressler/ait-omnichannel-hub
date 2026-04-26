@@ -1,0 +1,15 @@
+/node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+
+# Project Specifics
+.env
+auth-state/
+*.json.lock
+
+# Operating System
+.DS_Store
+Thumbs.db
