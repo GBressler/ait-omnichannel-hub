@@ -3,11 +3,12 @@ const axios = require('axios');
 class ApiClient {
   constructor(baseURL = 'https://automationintesting.online') { // Removed /api from base to handle different paths
     this.client = axios.create({
-      baseURL: baseURL,
+      //baseURL: baseURL,
+      baseURL: 'https://automationintesting.online',
+      timeout: 20000,
       headers: {
         'Content-Type': 'application/json',
       },
-      timeout: 10000,
       withCredentials: true // Crucial for handling session cookies
     });
   }
