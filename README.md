@@ -1,281 +1,182 @@
-# AIT Omnichannel Hub — QA Test Suite
+# **AIT Omnichannel Hub — QA Test Suite**
 
-A multi-layer, cross-platform test automation framework that validates the [Restful Booker Platform](https://automationintesting.online/) across API, Web (Playwright), and Mobile (WebdriverIO + Appium on Sauce Labs) surfaces.
+A multi-layer, cross-platform test automation framework that validates the Restful Booker Platform across API, Web (Playwright), and Mobile (WebdriverIO \+ Appium on Sauce Labs) surfaces.
 
----
+## **Table of Contents**
 
-## Table of Contents
+* [Architecture Overview](https://www.google.com/search?q=%23architecture-overview)  
+* [Tech Stack](https://www.google.com/search?q=%23tech-stack)  
+* [Project Structure](https://www.google.com/search?q=%23project-structure)  
+* [Prerequisites](https://www.google.com/search?q=%23prerequisites)  
+* [Environment Setup](https://www.google.com/search?q=%23environment-setup)  
+* [Running Tests](https://www.google.com/search?q=%23running-tests)  
+* [Reporting (Allure)](https://www.google.com/search?q=%23reporting-allure)  
+* [Test Strategy](https://www.google.com/search?q=%23test-strategy)  
+* [CI/CD Pipeline](https://www.google.com/search?q=%23cicd-pipeline)  
+* [Sauce Labs Integration](https://www.google.com/search?q=%23sauce-labs-integration)  
+* [Known Issues & Limitations](https://www.google.com/search?q=%23known-issues--limitations)  
+* [RCA Process](https://www.google.com/search?q=%23rca-process)
 
-- [Architecture Overview](#architecture-overview)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Prerequisites](#prerequisites)
-- [Environment Setup](#environment-setup)
-- [Running Tests](#running-tests)
-- [Test Strategy](#test-strategy)
-- [CI/CD Pipeline](#cicd-pipeline)
-- [Sauce Labs Integration](#sauce-labs-integration)
-- [Known Issues & Limitations](#known-issues--limitations)
-- [RCA Process](#rca-process)
+## ---
 
----
+**Architecture Overview**
 
-## Architecture Overview
+The framework is built on a three-layer atomic model where each layer builds on the one below it:
 
-The framework is built on a **three-layer atomic model** where each layer builds on the one below it:
+Plaintext
 
-```
-┌──────────────────────────────────────────────┐
-│           Layer 3: Mobile (WDIO)             │
-│   Appium → Sauce Labs Android Emulator       │
-│   Verifies UI state on real mobile devices   │
-├──────────────────────────────────────────────┤
-│           Layer 2: Web (Playwright)          │
-│   Headless Chrome/Firefox                    │
-│   Admin panel verification via token inject  │
-├──────────────────────────────────────────────┤
-│           Layer 1: API (Axios)               │
-│   Auth → Create Room → Assert → Teardown     │
-│   The atomic foundation all tests depend on  │
+┌──────────────────────────────────────────────┐  
+│           Layer 3: Mobile (WDIO)             │  
+│   Appium → Sauce Labs Android Emulator       │  
+│   Verifies UI state on real mobile devices   │  
+├──────────────────────────────────────────────┤  
+│           Layer 2: Web (Playwright)          │  
+│   Headless Chrome/Firefox                    │  
+│   Admin panel verification via token inject  │  
+├──────────────────────────────────────────────┤  
+│           Layer 1: API (Axios)               │  
+│   Auth → Create Room → Assert → Teardown     │  
+│   The atomic foundation all tests depend on  │  
 └──────────────────────────────────────────────┘
-```
 
 **Key principle — Stateful Test Isolation:**
-The AUT ([automationintesting.online](https://automationintesting.online/)) resets every ~10 minutes. Tests must be self-contained: the API layer creates all required state, the UI layers assert against it, and teardown cleans up — all within a single test lifecycle. Never rely on data that existed before your test started.
+
+The AUT (automationintesting.online) resets every \~10 minutes. Tests must be self-contained: the API layer creates all required state, the UI layers assert against it, and teardown cleans up — all within a single test lifecycle.
 
 **Token Injection:**
-Playwright tests authenticate via API first, then inject the session token into `storageState.json`. This allows tests to start directly on the `/#/admin` page without repeating UI login steps.
 
----
+Playwright tests authenticate via API first, then inject the session token into storageState.json. This allows tests to start directly on the /\#/admin page without repeating UI login steps.
 
-## Tech Stack
+## ---
+
+**Tech Stack**
 
 | Tool | Purpose | Version |
-|---|---|---|
-| Node.js | Runtime | 24.x |
-| Playwright | Web UI testing (Chrome, Firefox) | Latest |
-| WebdriverIO | Mobile test runner | Latest |
-| Appium | Mobile automation protocol | Latest |
-| Sauce Labs | Cloud device farm (Android emulator) | — |
-| Axios | HTTP client for API layer | Latest |
-| Mocha | Test framework (WDIO specs) | Latest |
-| GitHub Actions | CI/CD pipeline | — |
+| :---- | :---- | :---- |
+| **Node.js** | Runtime | 24.x |
+| **Playwright** | Web UI testing (Chrome, Firefox) | Latest |
+| **WebdriverIO** | Mobile test runner | Latest |
+| **Allure** | Test Reporting & Analytics | Latest |
+| **Sauce Labs** | Cloud device farm (Android emulator) | — |
+| **Axios** | HTTP client for API layer | Latest |
+| **GitHub Actions** | CI/CD pipeline | — |
 
----
+## ---
 
-## Project Structure
+**Project Structure**
 
-```
-├── .github/
-│   └── workflows/
-│       └── main.yml              # CI/CD pipeline definition
-├── support/
-│   ├── api/
-│   │   ├── ApiClient.js          # Core HTTP utility — Axios wrapper with request/response logging
-│   │   ├── AuthProvider.js       # POST /auth/login → captures and exposes session token/cookie
-│   │   └── RoomProvider.js       # Create and delete rooms via API (setup/teardown logic)
-│   └── config.js                 # Central environment config — all env vars resolved here
-├── tests/
-│   └── mobile/
-│       └── room-visibility.spec.js  # Mobile spec: API creates room → Mobile verifies visibility
-├── .env                          # Local secrets (NOT committed — see Environment Setup)
-├── .gitignore                    # Excludes node_modules, .env, storageState.json
-├── package.json                  # Dependencies and npm scripts
-└── wdio.conf.js                  # WebdriverIO config — capabilities, Sauce Labs, timeouts
-```
+Plaintext
 
----
+├── .github/workflows/  
+│   └── main.yml              \# CI/CD pipeline definition  
+├── support/  
+│   ├── api/  
+│   │   ├── ApiClient.js          \# Core HTTP utility with request/response logging  
+│   │   ├── AuthProvider.js       \# Auth logic & session capture  
+│   │   └── RoomProvider.js       \# Setup/Teardown logic  
+│   └── config.js                 \# Central environment config  
+├── tests/  
+│   └── mobile/  
+│       └── room-visibility.spec.js  \# Mobile end-to-end spec  
+├── allure-results/               \# Generated test artifacts (Git-ignored)  
+├── wdio.conf.js                  \# WebdriverIO & Sauce Labs config  
+└── package.json                  \# Scripts & Dependencies
 
-## Prerequisites
+## ---
 
-- **Node.js** >= 24.x (`node -v` to check)
-- **npm** >= 10.x
-- A **Sauce Labs** account with access to Real Device/Emulator Cloud
-  - Free tier supports 1 concurrent device
-- GitHub repository **Secrets** configured (for CI — see below)
+**Prerequisites**
 
----
+* **Node.js \>= 24.x**  
+* **npm \>= 10.x**  
+* **Allure Commandline**: Install via npm install \-g allure-commandline to view reports locally.  
+* **Sauce Labs Account**: Free tier supports 1 concurrent device.
 
-## Environment Setup
+## ---
 
-### 1. Clone and Install
+**Environment Setup**
 
-```bash
-git clone https://github.com/GBressller/ait-omnichannel-hub.git
-cd ait-omnichannel-hub
-npm ci
-```
+1. **Clone and Install**  
+   Bash  
+   git clone https://github.com/GBressller/ait-omnichannel-hub.git  
+   cd ait-omnichannel-hub  
+   npm ci
 
-### 2. Configure Local Environment
+2. **Configure Local Environment**  
+   Create a .env file at the project root:  
+   Plaintext  
+   SAUCE\_USERNAME=your\_username  
+   SAUCE\_ACCESS\_KEY=your\_access\_key  
+   API\_USERNAME=admin  
+   API\_PASSWORD=password
 
-Create a `.env` file at the project root. This file is gitignored and must never be committed:
+## ---
 
-```bash
-# .env
-TEST_BASE_URL=https://automationintesting.online/
-API_USERNAME=admin
-API_PASSWORD=password
+**Running Tests**
 
-SAUCE_USERNAME=your_sauce_username
-SAUCE_ACCESS_KEY=your_sauce_access_key
-SAUCE_REGION=us-west-1
-```
+### **Mobile Tests (WebdriverIO \+ Sauce Labs)**
 
-> **Note:** The AUT credentials (`admin` / `password`) are publicly documented as the default admin login for automationintesting.online.
+Run tests using the default configuration:
 
-### 3. GitHub Actions Secrets
+Bash
 
-For CI to run, the following must be set under **Settings → Secrets and variables → Actions** in your GitHub repo:
+npm run test
 
-| Secret | Description |
-|---|---|
-| `SAUCE_USERNAME` | Sauce Labs username |
-| `SAUCE_ACCESS_KEY` | Sauce Labs access key |
-| `SAUCE_REGION` | e.g. `us-west-1` |
-| `TEST_BASE_URL` | `https://automationintesting.online/` |
-| `API_USERNAME` | `admin` |
-| `API_PASSWORD` | `password` |
+### **Manual Trigger via GitHub Actions**
 
----
+1. Go to the **Actions** tab in GitHub.  
+2. Select **Omnichannel Hub CI**.  
+3. Click **Run workflow** (ensure workflow\_dispatch is enabled in main.yml).
 
-## Running Tests
+## ---
 
-### Mobile Tests (WebdriverIO + Sauce Labs)
+**Reporting (Allure)**
 
-Requires Sauce Labs credentials in `.env`.
+This project uses **Allure Reports** to provide high-level observability, including execution timelines, historical trends, and embedded failure screenshots.
 
-```bash
-npx wdio run wdio.conf.js
-```
+### **Local Report Management**
 
-This spins up the configured Android emulator on Sauce Labs and runs the mobile spec suite.
+To simplify the reporting workflow, use the following commands:
 
-### Manual Trigger via GitHub Actions
+* **Generate and Open Report**:  
+  Bash  
+  npm run report
 
-You can trigger a CI run without pushing code:
+* **Clean Results**: To clear old test data before a new run:  
+  Bash  
+  rm \-rf allure-results && rm \-rf allure-report
 
-1. Go to **Actions** tab in GitHub
-2. Select **Omnichannel Hub CI**
-3. Click **Run workflow** → select branch → **Run workflow**
+### **CI/CD Reporting**
 
-> To enable this, ensure your `main.yml` includes `workflow_dispatch:` under the `on:` key.
+After each GitHub Actions run, Allure results are collected as artifacts.
 
----
+1. Navigate to the completed **Action run**.  
+2. Download the allure-results zip.  
+3. \[Senior Upgrade Planned\]: Automated deployment to GitHub Pages for instant web-based viewing.
 
-## Test Strategy
+## ---
 
-### Layer 1 — API (Atomic Foundation)
+**Test Strategy**
 
-All tests begin with an API call. `AuthProvider` logs in via `POST /auth/login` and captures the session token. `RoomProvider` creates (and later deletes) the room under test. This ensures the UI layers always have a known, fresh state to assert against regardless of the 10-minute reset cycle.
+* **Layer 1 — API**: AuthProvider captures the session token; RoomProvider seeds the data.  
+* **Layer 2 — Web**: Token is injected into storageState.json to bypass UI login.  
+* **Layer 3 — Mobile**: WDIO asserts that the API-created room is visible on a real mobile browser.  
+* **Teardown**: Atomic cleanup follows every spec to prevent state leakage.
 
-### Layer 2 — Web (Playwright)
+## ---
 
-Playwright uses the API-captured token to inject auth state (`storageState.json`), bypassing the login UI and landing directly on the admin panel. This makes web tests faster and decoupled from login UI changes.
+**RCA Process**
 
-### Layer 3 — Mobile (WDIO)
+When a test fails on Sauce Labs, use this process:
 
-WDIO connects to Sauce Labs and runs the spec against an Android emulator. The spec verifies that a room created by the API is visible to a customer on the mobile front-end — a true end-to-end cross-layer assertion.
+1. **Locate Session ID**: Found in the CI log.  
+2. **Open Sauce Labs Dashboard**: View the video recording for UI anomalies.  
+3. **Analyze the HAR File**: Check for 401 (Auth), 403 (Permissions), or 500 (Server Reset) errors.  
+4. **Allure Insights**: Check the Allure "Suites" tab to see exactly which step in the before or test hook failed.
 
-### Teardown
+## ---
 
-After each test, `RoomProvider` deletes the created room via API. This keeps the AUT clean between runs and prevents state leakage, which is especially important given the shared, public nature of the site.
+**Contributing**
 
----
-
-## CI/CD Pipeline
-
-Defined in `.github/workflows/main.yml`. Triggers on:
-
-- Push to `main`
-- Pull request targeting `main`
-- Manual dispatch (if `workflow_dispatch` is configured)
-
-**Pipeline steps:**
-
-```
-Checkout → Setup Node 24 → npm ci → Run WDIO tests (Sauce Labs)
-```
-
-**Actions versions in use:** `actions/checkout@v4`, `actions/setup-node@v4`
-
-> GitHub has announced Node 20 action runners will be deprecated June 2, 2026. Update to `@v5` when available to avoid forced migration.
-
----
-
-## Sauce Labs Integration
-
-Tests run against a Sauce Labs Android emulator defined in `wdio.conf.js`:
-
-```
-Device:     Android GoogleAPI Emulator
-Browser:    Chrome 13.0
-Platform:   Android 13.0
-Automation: UiAutomator2
-```
-
-**Viewing results:**
-
-1. Log in to [app.saucelabs.com](https://app.saucelabs.com)
-2. Navigate to **Automated → Test Results**
-3. Filter by build: `Omnichannel-Final-Validation`
-
-Each run logs session IDs, HAR files, screenshots, and video — see [RCA Process](#rca-process) for how to use these.
-
----
-
-## Known Issues & Limitations
-
-| Issue | Impact | Notes |
-|---|---|---|
-| Sauce Labs free tier limits concurrency to 1 device | iOS capability commented out in `wdio.conf.js` | Upgrade account to re-enable parallel mobile execution |
-| AUT resets every ~10 minutes | Tests that run long or rely on pre-existing data will fail | Mitigated by atomic API setup/teardown in every spec |
-| GitHub Actions intermittent failure | Occasional CI flakiness | Under investigation — check Sauce Labs session logs and HAR files for network-level errors |
-| `storageState.json` not committed | Playwright token injection requires a local login run first | Run the auth setup script before Playwright specs on a fresh clone |
-
----
-
-## RCA Process
-
-When a test fails on Sauce Labs, use the following process to identify root cause:
-
-### 1. Locate the Session
-
-Find the session ID in the CI log:
-```
-INFO @wdio/sauce-service: Update job with sessionId <id>, status: failing
-```
-
-### 2. Open the Session in Sauce Labs
-
-Navigate to the session in the Sauce Labs dashboard. Available artifacts:
-
-- **Video recording** — full screen capture of the test run
-- **HAR file** — complete network log including request/response headers and bodies
-- **Appium logs** — device-level logs
-
-### 3. Analyze the HAR File
-
-The HAR file is the primary diagnostic tool for API-related failures. Filter by:
-
-- **Status 401** → Authentication failure (token expired or not injected correctly)
-- **Status 403** → Authorization failure (wrong role or missing cookie)
-- **Status 500** → AUT instability — likely caught a mid-reset window
-
-### 4. Common Failure Patterns
-
-| Symptom | Likely Cause | Fix |
-|---|---|---|
-| `ReferenceError` in `before` hook | Code bug in support files | Check variable names in `AuthProvider.js` / `ApiClient.js` |
-| Session timeout on Sauce Labs | `connectionRetryTimeout` too low | Increase to `120000` in `wdio.conf.js` |
-| Room not visible on mobile | AUT reset mid-test | Re-run; consider reducing test duration |
-| 401 on `/report` endpoint | Cookie not passed correctly | Inspect HAR, verify `AuthProvider` cookie capture |
-
----
-
-## Contributing
-
-1. Branch from `main`
-2. Add or modify specs under `tests/`
-3. Shared utilities go in `support/api/`
-4. All environment-specific values must go through `support/config.js` — no hardcoded URLs or credentials in specs
-5. Open a PR targeting `main` — CI will run automatically
+* All environment variables must be resolved in support/config.js.  
+* New API utilities belong in support/api/.  
+* Open a PR targeting main; CI will validate the changes on Sauce Labs.
