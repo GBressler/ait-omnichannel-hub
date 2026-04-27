@@ -9,8 +9,8 @@ module.exports = {
   apiUsername: process.env.API_USERNAME,
   apiPassword: process.env.API_PASSWORD,
   // API Endpoints
-  roomApiUrl: '/room/',
-  authApiUrl: '/auth/login',
+  roomApiUrl: 'room/',
+  authApiUrl: 'auth/login',
 
   // Sauce Labs Credentials 
   // pulled from GitHub Secrets during the CI run
