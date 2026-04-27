@@ -1,5 +1,5 @@
 const api = require('./ApiClient');
-const config = require('../../config'); // Adjust path as needed
+const config = require('../config'); // Adjust path as needed
 
 class AuthProvider {
     async login() {
