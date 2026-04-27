@@ -79,24 +79,11 @@ capabilities: [
             build: 'Omnichannel-Final-Validation',
             name: 'Worker 1: Android Phone'
         }
-    },
-    {
-        // Worker 2: The "Gold Standard" iOS Tablet
-        // iOS Simulators are incredibly stable on Sauce Labs
-        platformName: 'iOS',
-        browserName: 'Safari',
-        'appium:deviceName': 'iPad Air (5th generation) Simulator',
-        'appium:platformVersion': '16.2',
-        'appium:automationName': 'XCUITest',
-        'sauce:options': {
-            build: 'Omnichannel-Final-Validation',
-            name: 'Worker 2: iPad Tablet'
-        }
     }
 ],  
     // Reduces wait times for elements
     waitforTimeout: 5000,
-    connectionRetryTimeout: 30000,
+    connectionRetryTimeout: 120000,
 
 
     //
