@@ -3,18 +3,18 @@
 A multi-layer, cross-platform test automation framework that validates the Restful Booker Platform across API, Web (Playwright), and Mobile (WebdriverIO \+ Appium on Sauce Labs) surfaces.
 
 ## Table of Contents
-* [Architecture Overview](#architecture-overview)
-* [Tech Stack](#tech-stack)
-* [Project Structure](#project-structure)
-* [Prerequisites](#prerequisites)
-* [Environment Setup](#environment-setup)
-* [Running Tests](#running-tests)
-* [Reporting (Allure)](#reporting-allure)
-* [Test Strategy](#test-strategy)
-* [CI/CD Pipeline](#cicd-pipeline)
-* [Sauce Labs Integration](#sauce-labs-integration)
-* [Known Issues & Limitations](#known-issues--limitations)
-* [RCA Process](#rca-process)
+* Architecture Overview
+* Tech Stack
+* Project Structure
+* Prerequisites
+* Environment Setup
+* Running Tests
+* Reporting (Allure)
+* Test Strategy
+* CI/CD Pipeline
+* Sauce Labs Integration
+* Known Issues & Limitations
+* RCA Process
 ## ---
 
 **Architecture Overview**
