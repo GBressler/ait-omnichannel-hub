@@ -7,9 +7,14 @@
 
 # Project Specifics
 .env
+.env.local
 auth-state/
 *.json.lock
+logs
+*.log
 
 # Operating System
 .DS_Store
 Thumbs.db
+.env
+node_modules/

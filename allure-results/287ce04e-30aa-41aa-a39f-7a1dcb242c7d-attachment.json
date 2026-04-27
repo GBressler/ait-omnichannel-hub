@@ -1,0 +1,4 @@
+{
+  "script": "sauce:context=Mobile Customer Portal - Visibility Check - should show the API-created room on the front-end list",
+  "args": []
+}

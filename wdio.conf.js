@@ -1,3 +1,4 @@
+require('dotenv').config()
 exports.config = {
     //
     // ====================
@@ -5,7 +6,7 @@ exports.config = {
     // ====================
     // WebdriverIO supports running e2e tests as well as unit and component tests.
     runner: 'local',
-    port: 4723,
+    
     //
     // =================
     // Service Providers
@@ -14,8 +15,8 @@ exports.config = {
     // should work too though). These services define specific user and key (or access key)
     // values you need to put in here in order to connect to these services.
     //
-    user: process.env.placeholder,
-    key: process.env.placeholder,
+    user: process.env.SAUCE_USERNAME,
+    key: process.env.SAUCE_ACCESS_KEY,
     //
     // If you run your tests on Sauce Labs you can specify the region you want to run your tests
     // in via the `region` property. Available short handles for regions are `us` (default) and `eu`.
@@ -38,7 +39,7 @@ exports.config = {
     // of the config file unless it's absolute.
     //
     specs: [
-        // ToDo: define location for spec files here
+        './tests/mobile/**/*.js'
     ],
     // Patterns to exclude.
     exclude: [
@@ -60,20 +61,43 @@ exports.config = {
     // and 30 processes will get spawned. The property handles how many capabilities
     // from the same test should run tests.
     //
-    maxInstances: 10,
+    maxInstances: 2,
     //
     // If you have trouble getting all important capabilities together, check out the
     // Sauce Labs platform configurator - a great tool to configure your capabilities:
     // https://saucelabs.com/platform/platform-configurator
     //
-    capabilities: [{
-        // capabilities for local Appium web tests on an Android Emulator
+capabilities: [
+    {
+        // Worker 1: The "Gold Standard" Android Phone
         platformName: 'Android',
         browserName: 'Chrome',
         'appium:deviceName': 'Android GoogleAPI Emulator',
-        'appium:platformVersion': '12.0',
-        'appium:automationName': 'UiAutomator2'
-    }],
+        'appium:platformVersion': '13.0',
+        'appium:automationName': 'UiAutomator2',
+        'sauce:options': {
+            build: 'Omnichannel-Final-Validation',
+            name: 'Worker 1: Android Phone'
+        }
+    },
+    {
+        // Worker 2: The "Gold Standard" iOS Tablet
+        // iOS Simulators are incredibly stable on Sauce Labs
+        platformName: 'iOS',
+        browserName: 'Safari',
+        'appium:deviceName': 'iPad Air (5th generation) Simulator',
+        'appium:platformVersion': '16.2',
+        'appium:automationName': 'XCUITest',
+        'sauce:options': {
+            build: 'Omnichannel-Final-Validation',
+            name: 'Worker 2: iPad Tablet'
+        }
+    }
+],  
+    // Reduces wait times for elements
+    waitforTimeout: 5000,
+    connectionRetryTimeout: 30000,
+
 
     //
     // ===================
@@ -122,7 +146,7 @@ exports.config = {
     // Services take over a specific job you don't want to take care of. They enhance
     // your test setup with almost no effort. Unlike plugins, they don't add new
     // commands. Instead, they hook themselves up into the test process.
-    services: ['appium', 'sauce', 'visual'],
+    services: ['sauce'],
 
     // Framework you want to run your specs with.
     // The following are supported: Mocha, Jasmine, and Cucumber
@@ -145,14 +169,7 @@ exports.config = {
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: https://webdriver.io/docs/dot-reporter
-    reporters: ['spec', 
-                ['allure', {
-                    outputDir: 'allure-results',
-                    disableWebdriverStepsReporting: false,
-                    disableWebdriverScreenshotsReporting: false,
-                    //Tip: Group your mobile tests in the report
-                    useCucumberStepReporter: false 
-                }]],
+    reporters: [['allure', {outputDir: 'allure-results'}]],
 
     // Options to be passed to Mocha.
     // See the full list at http://mochajs.org/
@@ -255,8 +272,17 @@ exports.config = {
      * @param {boolean} result.passed    true if test has passed, otherwise false
      * @param {object}  result.retries   information about spec related retries, e.g. `{ attempts: 0, limit: 0 }`
      */
-    // afterTest: function(test, context, { error, result, duration, passed, retries }) {
-    // },
+    afterTest: async function(test, context, { error, result, duration, passed, retries }) {
+        if (!passed) {
+            await browser.takeScreenshot();
+        }
+
+        // This tells Sauce Labs whether the test passed or failed
+        await browser.execute(`sauce:job-result=${passed}`);
+    
+        // Optional: Name the job in Sauce Labs so it's not just "Unnamed job"
+        await browser.execute(`sauce:context=Completed: ${test.title}`);
+    },
 
 
     /**

@@ -1,0 +1,13 @@
+{
+  "script": "\n            function webdriverioPolyfill() {\n  var __defProp = Object.defineProperty;\n  var __name = function(target, _value) {\n    return __defProp(target, \"name\", { value: _value, configurable: true });\n  };\n  var __globalThis = typeof globalThis === \"object\" && globalThis || typeof window === \"object\" && window;\n  __globalThis.__name = __name;\n}\n            webdriverioPolyfill();\n            return ((elem, options2) => elem.scrollIntoView(options2)).apply(null, arguments)\n        ",
+  "args": [
+    {
+      "element-6066-11e4-a52e-4f735466cecf": "f.67E19C7F8BC6CCA064BBE2DB4724327E.d.8389B3178A80AA163D7E099146BB90C0.e.32",
+      "ELEMENT": "f.67E19C7F8BC6CCA064BBE2DB4724327E.d.8389B3178A80AA163D7E099146BB90C0.e.32"
+    },
+    {
+      "block": "start",
+      "inline": "nearest"
+    }
+  ]
+}

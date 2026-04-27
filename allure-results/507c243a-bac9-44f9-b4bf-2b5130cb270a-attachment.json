@@ -1,0 +1,4 @@
+{
+  "script": "sauce:context=Mobile Customer Portal - should show the API-created room on the mobile front-end",
+  "args": []
+}

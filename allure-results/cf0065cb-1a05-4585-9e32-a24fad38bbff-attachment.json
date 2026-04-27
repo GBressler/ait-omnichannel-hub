@@ -1,0 +1,4 @@
+{
+  "script": "sauce:job-name=Mobile Customer Portal - Visibility Check",
+  "args": []
+}

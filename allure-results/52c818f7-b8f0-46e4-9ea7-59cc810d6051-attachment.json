@@ -1,0 +1,4 @@
+{
+  "script": "sauce:context=Error: 🔴 AUTH FAILURE: No set-cookie header found in login response.",
+  "args": []
+}

@@ -1,0 +1,4 @@
+{
+  "script": "sauce:context=Completed: should show the API-created room on the front-end list",
+  "args": []
+}
