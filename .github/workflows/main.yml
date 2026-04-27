@@ -12,21 +12,23 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6 
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6 
         with:
-          node-version: '20'
+          node-version: '24' # Using the 2026 standard
           cache: 'npm'
 
       - name: Install Dependencies
         run: npm ci
 
-      - name: Run Sauce Labs Tests
+      - name: Run Sauce Labs Parallel Tests
         run: npx wdio run wdio.conf.js
         env:
           SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
           SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
           SAUCE_REGION: ${{ secrets.SAUCE_REGION }}
           TEST_BASE_URL: ${{ secrets.TEST_BASE_URL }}
+          API_USERNAME: ${{ secrets.API_USERNAME }}
+          API_PASSWORD: ${{ secrets.API_PASSWORD }}

@@ -6,7 +6,8 @@
 module.exports = {
   // Primary URL with environment variable injection for CI
   baseUrl: process.env.TEST_BASE_URL || 'https://automationintesting.online/',
-  
+  apiUsername: process.env.API_USERNAME,
+  apiPassword: process.env.API_PASSWORD,
   // API Endpoints
   roomApiUrl: '/room/',
   authApiUrl: '/auth/login',
