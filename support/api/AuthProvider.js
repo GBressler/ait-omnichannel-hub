@@ -1,14 +1,13 @@
 const api = require('./ApiClient');
-const config = require('../config'); // Adjust path as needed
+const config = require('../config');
 
 class AuthProvider {
     async login() {
         const payload = {
-            username: config.apiUsername, // Make sure these aren't undefined
+            username: config.apiUsername,
             password: config.apiPassword
         };
-        // Use your ApiClient to send this payload
-        return await apiClient.post(config.authApiUrl, payload);
+        return await api.post(config.authApiUrl, payload);
     }
 }
 
