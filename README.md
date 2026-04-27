@@ -2,21 +2,19 @@
 
 A multi-layer, cross-platform test automation framework that validates the Restful Booker Platform across API, Web (Playwright), and Mobile (WebdriverIO \+ Appium on Sauce Labs) surfaces.
 
-## **Table of Contents**
-
-* [Architecture Overview](https://www.google.com/search?q=%23architecture-overview)  
-* [Tech Stack](https://www.google.com/search?q=%23tech-stack)  
-* [Project Structure](https://www.google.com/search?q=%23project-structure)  
-* [Prerequisites](https://www.google.com/search?q=%23prerequisites)  
-* [Environment Setup](https://www.google.com/search?q=%23environment-setup)  
-* [Running Tests](https://www.google.com/search?q=%23running-tests)  
-* [Reporting (Allure)](https://www.google.com/search?q=%23reporting-allure)  
-* [Test Strategy](https://www.google.com/search?q=%23test-strategy)  
-* [CI/CD Pipeline](https://www.google.com/search?q=%23cicd-pipeline)  
-* [Sauce Labs Integration](https://www.google.com/search?q=%23sauce-labs-integration)  
-* [Known Issues & Limitations](https://www.google.com/search?q=%23known-issues--limitations)  
-* [RCA Process](https://www.google.com/search?q=%23rca-process)
-
+## Table of Contents
+* [Architecture Overview](#architecture-overview)
+* [Tech Stack](#tech-stack)
+* [Project Structure](#project-structure)
+* [Prerequisites](#prerequisites)
+* [Environment Setup](#environment-setup)
+* [Running Tests](#running-tests)
+* [Reporting (Allure)](#reporting-allure)
+* [Test Strategy](#test-strategy)
+* [CI/CD Pipeline](#cicd-pipeline)
+* [Sauce Labs Integration](#sauce-labs-integration)
+* [Known Issues & Limitations](#known-issues--limitations)
+* [RCA Process](#rca-process)
 ## ---
 
 **Architecture Overview**
